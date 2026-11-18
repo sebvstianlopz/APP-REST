@@ -8,8 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:db:reset": "./scripts/db-reset-local.sh"
+    "test:db:reset": "./scripts/db-reset-local.sh",
+    "test": "vitest run tests/unit",
+    "test:db": "vitest run tests/db",
+    "test:e2e": "node tests/e2e/run.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -20,6 +22,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-leaflet": "^5.0.0",
+    "server-only": "^0.0.1",
     "stripe": "^23.1.0",
     "zod": "^4.6.7"
   },
