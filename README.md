@@ -98,6 +98,40 @@ npm run dev
 ```
 Deploy to Vercel (or any Node host) with the same environment variables.
 
+## Test-mode environment
+
+A test environment has been provisioned. It contains **no real customers or money**, and every identifier below is non-secret.
+
+**Supabase** project `antojo-pr-test`
+| | |
+|---|---|
+| Project ref | `ygivcuxmuhcfjtumoxvw` (region `us-east-1`, free plan) |
+| URL | `https://ygivcuxmuhcfjtumoxvw.supabase.co` |
+| Publishable key | Dashboard → Project Settings → API keys (safe to expose; goes in `NEXT_PUBLIC_SUPABASE_ANON_KEY`) |
+| Migrations | All files in `supabase/migrations/` applied, plus the demo data from `supabase/seed.sql` |
+
+**Stripe** sandbox (test mode)
+| | |
+|---|---|
+| Product | `prod_VeTBOn9jQ12jIj`: "Membresía Antojo PR" |
+| Monthly price | `price_1UdAFj0QlkEG3hguJtaDF0vP`: $29/month, lookup key `antojo_monthly` (`STRIPE_PRICE_MONTHLY`) |
+| Yearly price | `price_1UdAFl0QlkEG3hguXPzvr6Dd`: $290/year, lookup key `antojo_yearly` (`STRIPE_PRICE_YEARLY`) |
+| Customer portal | `bpc_1UdAHC0QlkEG3hguFAFiVb8k`, the account default (card update, invoices, switch plan, cancel at period end) |
+
+The 30-day trial is applied at checkout (`STRIPE_TRIAL_DAYS`), not on the price.
+
+**Still to do by hand** (these need dashboard access, a public URL or a secret):
+1. **Secret keys**: put them in your host's environment variables, never in the repo.
+   - `SUPABASE_SERVICE_ROLE_KEY`: Supabase → Project Settings → API keys
+   - `STRIPE_SECRET_KEY`: Stripe → Developers → API keys, with test mode on
+2. **Supabase Auth → URL configuration**: set the Site URL and add `<your-domain>/auth/callback` to the redirect URLs. Optionally enable Google.
+3. **Admin**: after your first sign-in, run the `update public.profiles set role = 'admin' …` SQL from the Setup section.
+4. **Stripe webhook**: once the app is deployed, add `https://<your-domain>/api/stripe/webhook` with the events listed in Setup, then copy its signing secret into `STRIPE_WEBHOOK_SECRET`. Also update the portal's default return URL, which is currently `http://localhost:3000/es/panel`.
+5. **Remove the demo data before launch**:
+   ```sql
+   delete from public.restaurants where id::text like '00000000-0000-4000-8000-%';
+   ```
+
 ## Tests
 
 ```bash
